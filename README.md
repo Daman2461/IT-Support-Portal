@@ -2,6 +2,10 @@
 
 A production-grade, LLM-powered customer support automation system that combines intelligent AI agents with a modern web interface. The system interprets natural language customer issues and autonomously resolves them through backend tool calls, with user satisfaction tracking and escalation capabilities.
 
+
+https://github.com/user-attachments/assets/8693e5c1-7dce-41f1-923a-17cb4ddb0ec4
+
+
 ## 🚀 Features
 
 ### Core AI Agent
