@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Knowledge Base - IT Support Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Knowledge Base</h2>
+    <div class="d-flex gap-2">
+        <form class="d-flex" method="GET" action="{{ url_for('knowledge_base') }}">
+            <input type="search" class="form-control me-2" name="search" placeholder="Search articles..." value="{{ request.args.get('search', '') }}">
+            <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
+        {% if current_user.is_staff %}
+        <a href="{{ url_for('new_article') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> New Article
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <!-- Categories Sidebar -->
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Categories</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{{ url_for('knowledge_base') }}" class="list-group-item list-group-item-action {% if not category %}active{% endif %}">
+                    All Articles
+                </a>
+                {% for cat in categories %}
+                <a href="{{ url_for('knowledge_base', category=cat.slug) }}" 
+                   class="list-group-item list-group-item-action {% if category == cat.slug %}active{% endif %}">
+                    {{ cat.name }}
+                    <span class="badge bg-secondary float-end">{{ cat.article_count }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Articles List -->
+    <div class="col-md-9">
+        {% if articles %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for article in articles %}
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{ url_for('view_article', article_id=article.id) }}" class="text-decoration-none">
+                                {{ article.title }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted">
+                            <small>
+                                <i class="bi bi-folder me-1"></i>{{ article.category.name }}
+                                <i class="bi bi-eye ms-3 me-1"></i>{{ article.views }} views
+                                <i class="bi bi-hand-thumbs-up ms-3 me-1"></i>{{ article.helpful_count }} found helpful
+                            </small>
+                        </p>
+                        <p class="card-text">{{ article.summary }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Last updated {{ article.updated_at.strftime('%Y-%m-%d') }}</small>
+                            <a href="{{ url_for('view_article', article_id=article.id) }}" class="btn btn-sm btn-outline-primary">
+                                Read More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if pagination.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('knowledge_base', page=pagination.prev_num, category=category, search=request.args.get('search', '')) }}">
+                        Previous
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for page in pagination.iter_pages() %}
+                    {% if page %}
+                        <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('knowledge_base', page=page, category=category, search=request.args.get('search', '')) }}">
+                                {{ page }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if pagination.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('knowledge_base', page=pagination.next_num, category=category, search=request.args.get('search', '')) }}">
+                        Next
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-search display-1 text-muted"></i>
+            <h3 class="mt-3">No articles found</h3>
+            <p class="text-muted">Try adjusting your search or category filter</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

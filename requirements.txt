@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+langchain
+transformers
+sqlalchemy
+faiss-cpu
+python-dotenv
+faker
+httpx
+pydantic
+pytest
+pytest-asyncio
+loguru

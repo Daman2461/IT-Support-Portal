@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>AI Support Assistant</h2>
+    <form method="post">
+        <div class="form-group">
+            <label for="message">Describe your support issue:</label>
+            <textarea class="form-control" id="message" name="message" rows="4" required>{{ request.form.message or '' }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Submit</button>
+    </form>
+    {% if result %}
+        <div class="mt-4">
+            {% if result.error %}
+                <div class="alert alert-danger">{{ result.error }}</div>
+            {% else %}
+                <h5>Agent Result</h5>
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Intent:</strong> {{ result.intent }}</li>
+                    <li class="list-group-item"><strong>Action Result:</strong>
+                        <pre>{{ result.action_result | tojson(indent=2) }}</pre>
+                    </li>
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 
