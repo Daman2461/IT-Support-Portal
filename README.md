@@ -172,7 +172,6 @@ flask run
 ## 🔒 Security Features
 
 ### Data Protection
-- PII redaction in logs
 - Secure password hashing
 - Input validation and sanitization
 
