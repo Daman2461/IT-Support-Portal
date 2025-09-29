@@ -108,15 +108,7 @@ def agent_act(user_input: str, user_id: int = None):
     try:
         if not user_input or not isinstance(user_input, str):
             raise ValueError("Invalid user input")
-
-        # The agent executor handles everything else (memory, prompt, tool descriptions).
-        # We just need to pass the raw user input.
-        # We also pass user_id into the tool context if needed, though better tool design
-        # would handle this implicitly or via agent state. For now, we can inject it.
-        # A simple way is to add it to the input string for the agent to parse.
-        
-        # NOTE: Injecting context like user_id into the input is a common pattern.
-        # The agent is smart enough to know it's context, not part of the user's verbatim query.
+ 
         contextual_input = f"User Input: '{user_input}'. (Context: user_id is {user_id})"
 
         # Use .invoke() which is the standard method now
@@ -139,7 +131,7 @@ def agent_act(user_input: str, user_id: int = None):
             "error": error_msg
         }
 
-# --- Example Usage ---
+
 if __name__ == '__main__':
     print("Agent is ready. Type 'exit' to quit.")
     current_user_id = 2 # Example user_id
