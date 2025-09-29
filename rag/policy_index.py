@@ -1,8 +1,8 @@
 import os
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 
 class PolicyRetriever:
     def __init__(self, policy_dir="policies"):

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Place New Order{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Place New Order</h4>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST" action="{{ url_for('place_order') }}">
+                        
+                        <div class="mb-3">
+                            <label for="product_name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control {% if form_errors and 'product_name' in form_errors %}is-invalid{% endif %}" 
+                                   id="product_name" name="product_name" 
+                                   value="{{ request.form.product_name if request.form else '' }}" required>
+                            {% if form_errors and 'product_name' in form_errors %}
+                                <div class="invalid-feedback">
+                                    {{ form_errors['product_name'] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="product_id" class="form-label">Product ID</label>
+                                    <input type="text" class="form-control {% if form_errors and 'product_id' in form_errors %}is-invalid{% endif %}" 
+                                           id="product_id" name="product_id" 
+                                           value="{{ request.form.product_id if request.form else '' }}" required>
+                                    {% if form_errors and 'product_id' in form_errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form_errors['product_id'] }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="amount" class="form-label">Amount ($)</label>
+                                    <input type="number" class="form-control {% if form_errors and 'amount' in form_errors %}is-invalid{% endif %}" 
+                                           id="amount" name="amount" step="0.01" min="0.01" 
+                                           value="{{ request.form.amount if request.form else '' }}" required>
+                                    {% if form_errors and 'amount' in form_errors %}
+                                        <div class="invalid-feedback">
+                                            {{ form_errors['amount'] }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="shipping_address" class="form-label">Shipping Address</label>
+                            <textarea class="form-control {% if form_errors and 'shipping_address' in form_errors %}is-invalid{% endif %}" 
+                                      id="shipping_address" name="shipping_address" 
+                                      rows="3" required>{{ request.form.shipping_address if request.form else '' }}</textarea>
+                            {% if form_errors and 'shipping_address' in form_errors %}
+                                <div class="invalid-feedback">
+                                    {{ form_errors['shipping_address'] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Order Status</label>
+                            <select class="form-select {% if form_errors and 'status' in form_errors %}is-invalid{% endif %}" 
+                                    id="status" name="status" required>
+                                <option value="" disabled {% if not request.form.status %}selected{% endif %}>Select status...</option>
+                                <option value="pending" {% if request.form.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="shipped" {% if request.form.status == 'shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="cancelled" {% if request.form.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                            {% if form_errors and 'status' in form_errors %}
+                                <div class="invalid-feedback">
+                                    {{ form_errors['status'] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Place Order</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

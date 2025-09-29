@@ -1,41 +1,30 @@
-# SupportOpsAgent
+# Support Agent Automation System
 
-A production-grade, LLM-powered customer support automation system that combines intelligent AI agents with a modern web interface. The system interprets natural language customer issues and autonomously resolves them through backend tool calls, with user satisfaction tracking and escalation capabilities.
+A production-ready, LLM-powered customer support automation system that combines intelligent AI agents with a modern web interface. The system interprets natural language customer issues and autonomously resolves them through backend tool calls, with user satisfaction tracking and escalation capabilities.
 
-
-https://github.com/user-attachments/assets/8693e5c1-7dce-41f1-923a-17cb4ddb0ec4
-
-
-## 🚀 Features
+## 🚀 Key Features
 
 ### Core AI Agent
-- **LLM-powered agent** (Mistral API via LangChain)
+- **LLM-powered agent** (OpenAI GPT-3.5 via LangChain)
 - **Multi-step reasoning**: classify → retrieve policy → decide → act
 - **Autonomous tool invocation**: refund, cancel, replacement, escalate, status
 - **RAG (Retrieval-Augmented Generation)**: FAISS vector search for policy/FAQ context
 - **Responsible AI patterns**: PII redaction, fraud control, structured logging
 
 ### Backend Infrastructure
-- **FastAPI backend** with `/support/resolve` endpoint
-- **SQLAlchemy + SQLite** mock transactional database
-- **Modular tool architecture** with simulated backend actions
+- **FastAPI backend** with RESTful endpoints
+- **SQLAlchemy + SQLite** database with transaction support
+- **Modular tool architecture** for extensible functionality
 - **Structured JSON logging** for all tool calls and outcomes
-- **Comprehensive test suite** covering edge cases and fraud scenarios
+- **Comprehensive test suite** with pytest
 
-### Frontend Integration
-- **Flask-based IT Support Portal** with user authentication
-- **LLM result storage** in ticket database
-- **User satisfaction workflow**: AI response → user choice (satisfied/escalate)
-- **Real-time ticket management** with status updates
-- **Knowledge base** with articles and search functionality
+### Web Interface
+- **Flask-based Support Portal** with user authentication
+- **Ticket management** with status tracking
+- **User satisfaction** feedback collection
+- **Responsive design** with Bootstrap 5
 
-### Production Features
-- **API documentation** via FastAPI auto-generated Swagger UI
-- **Cross-functional collaboration** ready with OpenAPI schema
-- **Modular, extensible architecture** for easy scaling
-- **Comprehensive error handling** and user feedback
-
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
@@ -43,160 +32,212 @@ https://github.com/user-attachments/assets/8693e5c1-7dce-41f1-923a-17cb4ddb0ec4
 │   (Frontend)    │◄──►│   (Backend)      │◄──►│   (Data)        │
 │                 │    │                  │    │                 │
 │ • User Auth     │    │ • LLM Processing │    │ • Users         │
-│ • Ticket Mgmt   │    │ • Tool Routing   │    │ • Tickets       │
-│ • Satisfaction  │    │ • Policy RAG     │    │ • LLM Results   │
-│ • Knowledge Base│    │ • Fraud Control  │    │ • Refunds       │
+│ • Ticket Mgmt   │    │ • Tool Routing   │    │ • Orders        │
+│ • Order Mgmt    │    │ • Policy RAG     │    │ • Tickets       │
+│ • Dashboard     │    │ • Fraud Control  │    │ • Refunds       │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
 ```
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
 - **Python 3.11+**
 - **LangChain** for LLM orchestration
-- **Mistral API** for language model
-- **FastAPI** for backend API
+- **OpenAI GPT-3.5** for language model
+- **FastAPI** for backend API services
 - **Flask** for web frontend
 - **SQLAlchemy** for database ORM
-- **FAISS** for vector search
-- **Streamlit** (optional demo frontend)
-- **Bootstrap** for UI styling
+- **FAISS** for vector similarity search
+- **Bootstrap 5** for responsive UI
+- **jQuery** for dynamic frontend interactions
 
-## 📦 Installation & Setup
+## 📦 Project Structure
+
+```
+Support Agent/
+├── agents/               # AI agent implementation
+│   └── agent.py          # Main agent logic and workflow
+│
+├── api/                  # FastAPI backend
+│   ├── main.py           # API endpoints and routes
+│   └── frontend.py       # Streamlit demo (optional)
+│
+├── audit/                # Logging and monitoring
+│   └── logger.py         # Structured logging setup
+│
+├── db/                   # Database models and schema
+│   ├── __init__.py
+│   └── schema.py         # SQLAlchemy models
+│
+├── frontend/             # Flask web application
+│   ├── templates/        # HTML templates
+│   ├── static/           # CSS/JS assets
+│   └── app.py            # Flask application
+│
+├── policies/             # Policy documents
+│   ├── faqs.md           # Frequently asked questions
+│   └── refund_policy.md  # Refund policy details
+│
+├── rag/                  # Retrieval-Augmented Generation
+│   └── policy_index.py   # FAISS vector store for policies
+│
+├── tests/                # Test suite
+│   └── test_workflow.py  # Integration tests
+│
+├── tools/                # Action tools
+│   ├── cancel_order.py   # Order cancellation
+│   ├── escalate_case.py  # Case escalation
+│   ├── find_orders.py    # Order lookup
+│   ├── get_order_status.py
+│   ├── issue_refund.py   # Refund processing
+│   ├── langchain_tools.py # Tool registration
+│   ├── order_utils.py    # Shared order utilities
+│   └── tavily_search.py  # Web search capability
+│
+├── .env                  # Environment variables
+├── README.md             # This file
+├── requirements.txt      # Python dependencies
+└── init_db.py           # Database initialization
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.11+
+- OpenAI API key
+- SQLite (included in Python)
 
 ### 1. Environment Setup
+
 ```bash
-# Create and activate conda environment
-conda create -y -n supportopsagent python=3.11
-conda activate supportopsagent
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your OpenAI API key
 ```
 
-### 2. Environment Variables
-Create a `.env` file:
-```env
-MISTRAL_API_KEY=your_mistral_api_key_here
-SECRET_KEY=your_flask_secret_key
-MAIL_USERNAME=your_email@example.com
-MAIL_PASSWORD=your_email_password
-```
+### 2. Initialize the Database
 
-### 3. Database Setup
 ```bash
-# Seed the database with mock data
-PYTHONPATH=. python db/seed_data.py
+python init_db.py
 ```
 
-## 🚀 Running the System
+### 3. Start the Services
 
-### Option 1: Full Integration (Recommended)
+#### Backend API (FastAPI)
 ```bash
-# Terminal 1: Start FastAPI backend
 uvicorn api.main:app --reload
+```
 
-# Terminal 2: Start Flask frontend
-cd it-support-portal
+#### Frontend (Flask)
+```bash
+cd frontend
 flask run
 ```
 
-### Option 2: Streamlit Demo
-```bash
-# Start Streamlit frontend
-streamlit run api/frontend.py
-```
+### 4. Access the Application
+- **Web Interface**: http://localhost:5000
+- **API Documentation**: http://localhost:8000/docs
 
-## 📋 Usage
+## 🛠️ Key Components
 
-### 1. Access the System
-- **Flask Portal**: http://127.0.0.1:5000
-- **FastAPI Docs**: http://127.0.0.1:8000/docs
-- **Streamlit Demo**: http://localhost:8501
+### AI Agent (`agents/agent.py`)
+- Handles natural language understanding
+- Manages conversation state
+- Orchestrates tool usage
+- Implements RAG for policy lookup
 
-### 2. Create a Support Ticket
-1. Register/login to the Flask portal
-2. Navigate to "New Ticket"
-3. Enter your support issue
-4. The LLM agent will process your request
-5. Choose if you're satisfied or want human assistance
+### API Endpoints (`api/main.py`)
+- `POST /support/resolve` - Process support requests
+- `GET /conversation/{conversation_id}` - Get conversation history
+- `DELETE /conversation/{conversation_id}` - Clear conversation
 
-### 3. API Integration
-```bash
-curl -X POST "http://127.0.0.1:8000/support/resolve" \
-     -H "Content-Type: application/json" \
-     -d '{"user_input": "I want a refund for my damaged item", "user_id": 1}'
-```
+### Tools (`tools/`)
+- **Order Management**: Create, cancel, check status
+- **Refund Processing**: Handle refunds with validation
+- **Case Escalation**: Route to human agents
+- **Web Search**: Look up information dynamically
+
+### Database Models (`db/schema.py`)
+- **User**: System users and authentication
+- **Order**: Customer orders
+- **Ticket**: Support tickets
+- **RefundHistory**: Track refund transactions
+
+## 🔒 Security Features
+
+### Data Protection
+- PII redaction in logs
+- Secure password hashing
+- Input validation and sanitization
+
+### Fraud Prevention
+- Rate limiting on refunds (max 2 per month)
+- Order validation before processing
+- Audit logging of all actions
 
 ## 🧪 Testing
 
-Run the comprehensive test suite:
+Run the test suite:
 ```bash
-PYTHONPATH=. pytest --maxfail=3 --disable-warnings -v
+pytest -v tests/
 ```
 
-Tests cover:
-- ✅ Successful refund workflow
-- ✅ Refund limit enforcement
-- ✅ Escalation scenarios
-- ✅ Unknown intent handling
-- ✅ PII redaction
-- ✅ Fraud detection
+Test coverage includes:
+- Order processing workflows
+- Refund validations
+- Policy enforcement
+- Error handling
+- Security controls
 
-## 🔧 Configuration
+## 📈 Monitoring
 
-### LLM Models
-- **Default**: Mistral Medium (`mistral-medium`)
-- **Alternative**: Mistral Small (`mistral-small`) or Large (`mistral-large`)
-- **Configuration**: Edit `agents/agent.py`
+### Logs
+- Application logs in `logs/`
+- Action audit trail in `action_log.jsonl`
 
-### Database
-- **Default**: SQLite (`support_portal.db`)
-- **Production**: PostgreSQL/MySQL via SQLAlchemy URI
-- **Configuration**: Edit Flask app config
+### Metrics
+- Response times
+- Success/failure rates
+- Tool usage statistics
 
-### Tools & Policies
-- **Tools**: Located in `tools/` directory
-- **Policies**: Markdown files in `policies/` directory
-- **Customization**: Add new tools or policies as needed
+## 🌐 Deployment
 
-## 📊 Monitoring & Logging
+### Production Setup
+1. Set up a production database (PostgreSQL recommended)
+2. Configure environment variables in `.env`
+3. Use a production WSGI server (Gunicorn with Uvicorn)
 
-### Action Logs
-- **Location**: `action_log.jsonl`
-- **Format**: JSON lines with timestamp, action, params, result
-- **Usage**: Audit trail for all agent actions
-
-### Error Handling
-- **FastAPI**: Automatic error responses with details
-- **Flask**: User-friendly error messages
-- **Logging**: Structured logging for debugging
-
-## 🔒 Security & Compliance
-
-### PII Protection
-- **Redaction**: Names and emails automatically redacted
-- **Processing**: LLM never sees sensitive data
-- **Storage**: Secure handling of user information
-
-### Fraud Prevention
-- **Limits**: Max 2 refunds per user/month
-- **Validation**: Input sanitization and validation
-- **Audit**: Complete action logging for compliance
-
-## 🚀 Deployment
-
-### Development
+### Docker (Optional)
 ```bash
-# Local development with auto-reload
-uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
-flask run --host 0.0.0.0 --port 5000
+docker-compose up --build
 ```
 
-### Production
-- **FastAPI**: Deploy with Gunicorn/Uvicorn
-- **Flask**: Deploy with Gunicorn
-- **Database**: Use production database (PostgreSQL/MySQL)
-- **Environment**: Set production environment variables
+## 📚 Documentation
+
+### API Documentation
+Available at `/docs` when running the FastAPI server
+
+### Code Documentation
+- Docstrings follow Google style
+- Type hints throughout the codebase
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ### Cloud Platforms
 - **Render**: Easy deployment for both FastAPI and Flask

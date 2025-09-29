@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Register - IT Support Portal{% endblock %}
+
+{# Initialize form_errors with empty dict if not provided #}
+{% if not form_errors %}
+    {% set form_errors = {} %}
+{% endif %}
+
+{# Process flashed messages to extract field errors #}
+{% for message in get_flashed_messages(with_categories=true) %}
+    {% if message[0] == 'danger' and ': ' in message[1] %}
+        {% set field_name = message[1].split(': ')[0].lower() %}
+        {% set error_msg = message[1].split(': ')[1] %}
+        {% set _ = form_errors.update({field_name: error_msg}) %}
+    {% endif %}
+{% endfor %}
+
+{% block extra_css %}
+<style>
+body {
+    background-color: #f8f9fa;
+}
+.register-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.register-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.register-form {
+    margin-bottom: 20px;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function validateForm() {
+    const form = document.querySelector('form');
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const email = document.getElementById('email').value;
+    let isValid = true;
+    
+    // Reset validation
+    form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    
+    // Validate username
+    const username = document.getElementById('username').value.trim();
+    if (!username) {
+        showError('username', 'Username is required');
+        isValid = false;
+    } else if (username.length < 3) {
+        showError('username', 'Username must be at least 3 characters long');
+        isValid = false;
+    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+        showError('username', 'Username can only contain letters, numbers, and underscores');
+        isValid = false;
+    }
+    
+    // Validate password
+    if (!password) {
+        showError('password', 'Password is required');
+        isValid = false;
+    } else if (password.length < 6) {
+        showError('password', 'Password must be at least 6 characters long');
+        isValid = false;
+    }
+    
+    // Validate password confirmation
+    if (password !== confirmPassword) {
+        showError('confirm_password', 'Passwords do not match');
+        isValid = false;
+    }
+    
+    // Validate email if provided
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('email', 'Please enter a valid email address');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function showError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    field.classList.add('is-invalid');
+    
+    let feedback = field.nextElementSibling;
+    if (!feedback || !feedback.classList.contains('invalid-feedback')) {
+        feedback = document.createElement('div');
+        feedback.className = 'invalid-feedback';
+        field.parentNode.insertBefore(feedback, field.nextSibling);
+    }
+    
+    feedback.textContent = message;
+}
+
+// Add real-time validation
+['username', 'email', 'password', 'confirm_password'].forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                this.classList.remove('is-invalid');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Register</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('register') }}" onsubmit="return validateForm()">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control {% if 'username' in form_errors %}is-invalid{% endif %}" 
+                               id="username" name="username" value="{{ username or '' }}" 
+                               required minlength="3" maxlength="50" autofocus>
+                        {% if 'username' in form_errors %}
+                            <div class="invalid-feedback">
+                                {{ form_errors.username }}
+                            </div>
+                        {% else %}
+                            <div class="form-text">3-50 characters. Letters, numbers, and underscores only.</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control {% if 'email' in form_errors %}is-invalid{% endif %}" 
+                               id="email" name="email" value="{{ email or '' }}">
+                        {% if 'email' in form_errors %}
+                            <div class="invalid-feedback">
+                                {{ form_errors.email }}
+                            </div>
+                        {% else %}
+                            <div class="form-text">Optional, but recommended for account recovery.</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control {% if 'password' in form_errors %}is-invalid{% endif %}" 
+                               id="password" name="password" required minlength="6">
+                        {% if 'password' in form_errors %}
+                            <div class="invalid-feedback">
+                                {{ form_errors.password }}
+                            </div>
+                        {% else %}
+                            <div class="form-text">At least 6 characters long.</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control {% if 'confirm_password' in form_errors %}is-invalid{% endif %}" 
+                               id="confirm_password" name="confirm_password" required>
+                        {% if 'confirm_password' in form_errors %}
+                            <div class="invalid-feedback">
+                                {{ form_errors.confirm_password }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        </button>
+                    </div>
+                </form>
+                <div class="mt-3 text-center">
+                    <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
